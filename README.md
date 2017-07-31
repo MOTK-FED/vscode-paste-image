@@ -1,82 +1,50 @@
-# Paste Image
+# Paste Image Ftp
 
 Paste image directly from clipboard to markdown/asciidoc(or other file)!
 
 **Support Mac/Windows/Linux!** And support config destination folder.
 
-![paste-image](https://raw.githubusercontent.com/mushanshitiancai/vscode-paste-image/master/res/vscode-paste-image.gif)
-
 ## Usage
 
 1. capture screen to clipboard
 2. Open the command palette: `Ctrl+Shift+P` (`Cmd+Shift+P` on Mac)
-3. Type: "Paste Image" or you can use default keyboard binding: `Ctrl+Alt+V` (`Cmd+Alt+V` on Mac).
-4. Image will be saved in the folder that contains current editing file
-5. The relative path will be paste to current editing file 
+3. Type: "Paste Image" or you can use default keyboard binding: `Ctrl+Shift+V` (`Cmd+Shift+V` on Mac).
+4. Image will be saved on ftp server
+5. The path will be paste to current editing file 
 
 ## Config
 
-- `pasteImage.path`
+- `pasteImageFtp.ftpHost`
 
-    The destination to save image file.
+    The destination ftp server to save image file.    
+
     
-    You can use variable `${currentFileDir}`, `${projectRoot}`, `${currentFileName}` and `${currentFileNameWithoutExt}`. 
+    Default is `""`.
+
+- `pasteImageFtp.ftpUserName`
+
+    The ftp server username.
+
     
-    - `${currentFileDir}` will be replace by the path of directory that contain current editing file. 
-    - `${projectRoot}` will be replace by path of the project opened in vscode.
-    - `${currentFileName}` will be replace by current file name with ext.
-    - `${currentFileNameWithoutExt}` will be replace by current file name without ext.
+    Default is `""`.
 
-    Default value is `${currentFileDir}`.
+- `pasteImageFtp.ftpUserPwd`
 
-- `pasteImage.basePath`
-
-    The base path of image url.
-    
-    You can use variable `${currentFileDir}`, `${projectRoot}`, `${currentFileName}` and `${currentFileNameWithoutExt}`. 
-    
-    - `${currentFileDir}` will be replace by the path of directory that contain current editing file. 
-    - `${projectRoot}` will be replace by path of the project opened in vscode.
-    - `${currentFileName}` will be replace by current file name with ext.
-    - `${currentFileNameWithoutExt}` will be replace by current file name without ext.
-
-    Default value is `${currentFileDir}`.
-
-- `pasteImage.forceUnixStyleSeparator`
-
-    Force set the file separator styel to unix style. If set false, separator styel will follow the system style. 
-    
-    Default is `true`.
-
-- `pasteImage.prefix`
-
-    The string prepend to the resolved image path before paste.
+    The ftp server user password.
 
     Default is `""`.
 
-- `pasteImage.suffix`
+- `pasteImage.ftpPort`
 
-    The string append to the resolved image path before paste.
+    The ftp server port.
+
+    Default is `21`.
+
+- `pasteImage.ftpFolder`
+
+    The destination server folder you want to save.
 
     Default is `""`.
-
-## Config Example
-
-I use vscode to edit my hexo blog. The folder struct like this:
-
-```
-blog/source/_posts  (articles)
-blog/source/img     (images)
-```
-
-I want to save all image in `blog/source/img`, and insert image url to article. And hexo will generate `blog/source/` as the website root, so the image url shoud be like `/img/xxx.png`. So I can config pasteImage in `blog/.vscode/setting.json` like this:
-
-```
-"pasteImage.path": "${projectRoot}/source/img",
-"pasteImage.basePath": "${projectRoot}/source",
-"pasteImage.forceUnixStyleSeparator": true,
-"pasteImage.prefix": "/"
-```
 
 ## Format
 
@@ -96,42 +64,4 @@ In other file, it just paste the image's path.
 
 ## Contact
 
-If you have some any question or advice, Welcome to [issue](https://github.com/mushanshitiancai/vscode-paste-image/issues)
-
-## TODO
-
-- [x] support win (by @kivle)
-- [x] support linux
-- [x] support use the selected text as the image name
-- [x] support config (@ysknkd in #4)
-- [x] support config relative/absolute path (@ysknkd in #4)
-- [x] support asciidoc
-- [x] supoort use variable ${projectRoot} and ${currentFileDir} in config
-- [x] support config basePath
-- [x] support config forceUnixStyleSeparator
-- [x] support config prefix
-- [x] support config suffix
-- [x] supoort use variable ${currentFileName} and ${currentFileNameWithoutExt} in config
-- [x] support check if the dest directory is a file
-- [x] support select text as a sub path with multi new directory like `a/b/c/d/imageName` or `../a/b/c/d/imageName`
-- [ ] support config default image name pattern
-
-## License
-
-The extension and source are licensed under the [MIT license](LICENSE.txt).
-
-## Donate
-
-If you like this plugin, you can donate to me to support me develop it better, thank you!
-
-PayPal:
-
-<a href="https://www.paypal.me/mushanshitiancai"><img src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif"></img></a>
-
-支付宝:
-
-![alipay](https://raw.githubusercontent.com/mushanshitiancai/vscode-paste-image/master/res/alipay.png)
-
-微信支付:
-
-![weixin](https://raw.githubusercontent.com/mushanshitiancai/vscode-paste-image/master/res/weixin.png)
+If you have some any question or advice, Welcome to [issue](https://github.com/MOTK-FED/vscode-paste-image-ftp/issues)

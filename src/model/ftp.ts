@@ -1,4 +1,4 @@
-export default interface FtpInfo {
+export interface FtpInfo {
     host: string;
     port: number;
     username: string;

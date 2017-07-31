@@ -2,15 +2,15 @@
   "name": "vscode-paste-image-ftp",
   "displayName": "Paste Image Ftp",
   "description": "paste image from clipboard directly and upload ftp server",
-  "version": "0.9.4",
-  "publisher": "bugfucker",
+  "version": "0.0.2",
+  "publisher": "ziok2010",
   "author": {
-    "name": "bugfucker",
+    "name": "ziok2010",
     "email": "zhang.zixiang@ruanyun.net"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:MOTK-FED/vscode-paste-image-ftp.git"
+    "url": "https://github.com/MOTK-FED/vscode-paste-image-ftp"
   },
   "homepage": "https://github.com/MOTK-FED/vscode-paste-image-ftp/blob/master/README.md",
   "bugs": {

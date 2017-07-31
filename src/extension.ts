@@ -6,7 +6,7 @@ import * as fse from 'fs-extra';
 import { spawn } from 'child_process';
 import * as moment from 'moment';
 import * as upath from 'upath';
-import FtpInfo from './model/ftp'
+import { FtpInfo } from './model/ftp'
 
 let EasyFtp = require('easy-ftp');
 
