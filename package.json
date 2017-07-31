@@ -1,20 +1,20 @@
 {
-  "name": "vscode-paste-image",
-  "displayName": "Paste Image",
-  "description": "paste image from clipboard directly",
+  "name": "vscode-paste-image-ftp",
+  "displayName": "Paste Image Ftp",
+  "description": "paste image from clipboard directly and upload ftp server",
   "version": "0.9.4",
-  "publisher": "mushan",
+  "publisher": "bugfucker",
   "author": {
-    "name": "mushan",
-    "email": "mushanmail@126.com"
+    "name": "bugfucker",
+    "email": "zhang.zixiang@ruanyun.net"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mushanshitiancai/vscode-paste-image.git"
+    "url": "git@github.com:MOTK-FED/vscode-paste-image-ftp.git"
   },
-  "homepage": "https://github.com/mushanshitiancai/vscode-paste-image/blob/master/README.md",
+  "homepage": "https://github.com/MOTK-FED/vscode-paste-image-ftp/blob/master/README.md",
   "bugs": {
-    "url": "https://github.com/mushanshitiancai/vscode-paste-image/issues"
+    "url": "https://github.com/MOTK-FED/vscode-paste-image-ftp/issues"
   },
   "icon": "res/icon.png",
   "galleryBanner": {
@@ -25,7 +25,7 @@
     "paste",
     "image",
     "markdown",
-    "paste image",
+    "paste image ftp",
     "keybindings"
   ],
   "engines": {
@@ -35,52 +35,77 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:extension.pasteImage"
+    "onCommand:extension.pasteImageFtp"
   ],
   "main": "./out/src/extension",
   "contributes": {
     "configuration": {
       "type": "object",
-      "title": "Paste Image Configuration",
+      "title": "Paste Image Ftp Configuration",
       "properties": {
-        "pasteImage.path": {
+        "pasteImageFtp.path": {
           "type": "string",
           "default": "${currentFileDir}",
           "description": "The destination to save image file.You can use variable ${currentFileDir} and ${projectRoot}. ${currentFileDir} will be replace by the path of directory that contain current editing file. ${projectRoot} will be replace by path of the project opened in vscode."
         },
-        "pasteImage.basePath": {
+        "pasteImageFtp.basePath": {
           "type": "string",
           "default": "${currentFileDir}",
           "description": "The base path of image url.You can use variable ${currentFileDir} and ${projectRoot}. ${currentFileDir} will be replace by the path of directory that contain current editing file. ${projectRoot} will be replace by path of the project opened in vscode. If you set basePath to empty String, it will insert absolute path to file."
         },
-        "pasteImage.forceUnixStyleSeparator": {
+        "pasteImageFtp.forceUnixStyleSeparator": {
           "type": "boolean",
           "default": true,
           "description": "Force set the file separator styel to unix style. If set false, separator styel will follow the system style."
         },
-        "pasteImage.prefix": {
+        "pasteImageFtp.prefix": {
           "type": "string",
           "default": "",
           "description": "The string prepend to the resolved image path before paste."
         },
-        "pasteImage.suffix": {
+        "pasteImageFtp.suffix": {
           "type": "string",
           "default": "",
           "description": "The string append to the resolved image path before paste."
+        },
+        "pasteImageFtp.ftpHost": {
+          "type": "string",
+          "default": "",
+          "description": "ftp server address"
+        },
+        "pasteImageFtp.ftpUserName": {
+          "type": "string",
+          "default": "",
+          "description": "ftp server username"
+        },
+        "pasteImageFtp.ftpUserPwd": {
+          "type": "string",
+          "default": "",
+          "description": "ftp server user password"
+        },
+        "pasteImageFtp.ftpPort": {
+          "type": "number",
+          "default": 21,
+          "description": "ftp server port"
+        },
+        "pasteImageFtp.ftpFolder": {
+          "type": "string",
+          "default": "",
+          "description": "ftp server file saved folder"
         }
       }
     },
     "commands": [
       {
-        "command": "extension.pasteImage",
-        "title": "Paste Image"
+        "command": "extension.pasteImageFtp",
+        "title": "Paste Image Ftp"
       }
     ],
     "keybindings": [
       {
-        "command": "extension.pasteImage",
-        "key": "ctrl+alt+v",
-        "mac": "cmd+alt+v",
+        "command": "extension.pasteImageFtp",
+        "key": "ctrl+shift+v",
+        "mac": "cmd+shift+v",
         "when": "editorTextFocus"
       }
     ]
@@ -92,6 +117,7 @@
   },
   "dependencies": {
     "copy-paste": "^1.2.0",
+    "easy-ftp": "^0.3.36",
     "fs-extra": "^3.0.1",
     "moment": "^2.14.1",
     "upath": "^1.0.0"

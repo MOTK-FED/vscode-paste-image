@@ -6,6 +6,9 @@ import * as fse from 'fs-extra';
 import { spawn } from 'child_process';
 import * as moment from 'moment';
 import * as upath from 'upath';
+import FtpInfo from './model/ftp'
+
+let EasyFtp = require('easy-ftp');
 
 class Logger {
     static channel: vscode.OutputChannel;
@@ -29,12 +32,12 @@ class Logger {
 }
 
 export function activate(context: vscode.ExtensionContext) {
-    Logger.channel = vscode.window.createOutputChannel("PasteImage")
+    Logger.channel = vscode.window.createOutputChannel("pasteImageFtp")
     context.subscriptions.push(Logger.channel);
 
-    Logger.log('Congratulations, your extension "vscode-paste-image" is now active!');
+    Logger.log('Congratulations, your extension "vscode-paste-image-ftp" is now active!');
 
-    let disposable = vscode.commands.registerCommand('extension.pasteImage', () => {
+    let disposable = vscode.commands.registerCommand('extension.pasteImageFtp', () => {
         try {
             Paster.paste();
         } catch (e) {
@@ -59,6 +62,12 @@ class Paster {
     static prefixFromConfig: string;
     static suffixFromConfig: string;
     static forceUnixStyleSeparatorFromConfig: boolean;
+    static ftpHostConfig: string;
+    static ftpPortConfig: number;
+    static ftpUserNameConfig: string;
+    static ftpUserPwdConfig: string;
+    static ftpFolderConfig: string;
+    static fileName: string;
 
     public static paste() {
         // get current edit file path
@@ -83,26 +92,32 @@ class Paster {
             return;
         }
 
+        this.ftpHostConfig = vscode.workspace.getConfiguration('pasteImageFtp')['ftpHost'];
+        this.ftpPortConfig = vscode.workspace.getConfiguration('pasteImageFtp')['ftpPort'];
+        this.ftpUserPwdConfig = vscode.workspace.getConfiguration('pasteImageFtp')['ftpUserPwd'];
+        this.ftpUserNameConfig = vscode.workspace.getConfiguration('pasteImageFtp')['ftpUserName'];
+        this.ftpFolderConfig = vscode.workspace.getConfiguration('pasteImageFtp')['ftpFolder'];
+
         // load config pasteImage.path/pasteImage.basePath
-        this.folderPathFromConfig = vscode.workspace.getConfiguration('pasteImage')['path'];
+        this.folderPathFromConfig = vscode.workspace.getConfiguration('pasteImageFtp')['path'];
         if (!this.folderPathFromConfig) {
             this.folderPathFromConfig = "${currentFileDir}";
         }
         if (this.folderPathFromConfig.length !== this.folderPathFromConfig.trim().length) {
-            Logger.showErrorMessage(`The config pasteImage.path = '${this.folderPathFromConfig}' is invalid. please check your config.`);
+            Logger.showErrorMessage(`The config pasteImageFtp.path = '${this.folderPathFromConfig}' is invalid. please check your config.`);
             return;
         }
-        this.basePathFromConfig = vscode.workspace.getConfiguration('pasteImage')['basePath'];
+        this.basePathFromConfig = vscode.workspace.getConfiguration('pasteImageFtp')['basePath'];
         if (!this.basePathFromConfig) {
             this.basePathFromConfig = "";
         }
         if (this.basePathFromConfig.length !== this.basePathFromConfig.trim().length) {
-            Logger.showErrorMessage(`The config pasteImage.path = '${this.basePathFromConfig}' is invalid. please check your config.`);
+            Logger.showErrorMessage(`The config pasteImageFtp.path = '${this.basePathFromConfig}' is invalid. please check your config.`);
             return;
         }
-        this.prefixFromConfig = vscode.workspace.getConfiguration('pasteImage')['prefix'];
-        this.suffixFromConfig = vscode.workspace.getConfiguration('pasteImage')['suffix'];
-        this.forceUnixStyleSeparatorFromConfig = vscode.workspace.getConfiguration('pasteImage')['forceUnixStyleSeparator'];
+        this.prefixFromConfig = vscode.workspace.getConfiguration('pasteImageFtp')['prefix'];
+        this.suffixFromConfig = vscode.workspace.getConfiguration('pasteImageFtp')['suffix'];
+        this.forceUnixStyleSeparatorFromConfig = vscode.workspace.getConfiguration('pasteImageFtp')['forceUnixStyleSeparator'];
         this.forceUnixStyleSeparatorFromConfig = !!this.forceUnixStyleSeparatorFromConfig;
 
         this.folderPathFromConfig = this.replacePathVariable(this.folderPathFromConfig, projectPath, filePath);
@@ -138,6 +153,20 @@ class Paster {
                     return;
                 }
 
+                if (this.ftpHostConfig && this.ftpUserPwdConfig && this.ftpUserNameConfig) {
+                    let ftpConfig: FtpInfo = {
+                        host: this.ftpHostConfig,
+                        port: this.ftpPortConfig,
+                        username: this.ftpUserNameConfig,
+                        password: this.ftpUserPwdConfig,
+                        folder: this.ftpFolderConfig
+                    }
+
+                    this.ftpUploadImage(ftpConfig, imagePathReturnByScript);
+                } else {
+                    Logger.showErrorMessage(`The Ftp config pasteImage.ftp* is invalid. please check your config.`);
+                }
+
                 imagePath = this.renderFilePath(editor.document.languageId, this.basePathFromConfig, imagePath, this.forceUnixStyleSeparatorFromConfig, this.prefixFromConfig, this.suffixFromConfig);
 
                 editor.edit(edit => {
@@ -169,6 +198,8 @@ class Paster {
             imageFileName = selectText + ".png";
         }
 
+        this.fileName = imageFileName;
+
         // image output path
         let folderPath = path.dirname(filePath);
         let imagePath = "";
@@ -184,6 +215,29 @@ class Paster {
     }
 
     /**
+    * ftp upload img
+     * @param ftpInfo  
+     *  host
+     *  port 
+     *  userName 
+     *  passWord 
+     */
+    private static ftpUploadImage(ftpInfo: FtpInfo, imgSavedPath) {
+        const ftp = new EasyFtp();
+        ftp.connect(ftpInfo);
+
+        let arr = [{ local: imgSavedPath, remote: ftpInfo.folder + '/' + this.fileName }];
+
+        ftp.upload(arr, "/", function (err) {
+            ftp.close();
+
+            if (err) {
+                Logger.showErrorMessage(`Failed upload img to ftp server folder. message=${err}`);
+            }
+        });
+    }
+
+    /**
      * create directory for image when directory does not exist
      */
     private static createImageDirWithImagePath(imagePath: string) {
@@ -195,7 +249,7 @@ class Paster {
                     if (stats.isDirectory()) {
                         resolve(imagePath);
                     } else {
-                        reject(new PluginError(`The image dest directory '${imageDir}' is a file. please check your 'pasteImage.path' config.`))
+                        reject(new PluginError(`The image dest directory '${imageDir}' is a file. please check your 'pasteImageFtp.path' config.`))
                     }
                 } else if (err.code == "ENOENT") {
                     fse.ensureDir(imageDir, (err) => {
@@ -295,15 +349,19 @@ class Paster {
      * e.g. in markdown image file path will render to ![](path)
      */
     public static renderFilePath(languageId: string, basePath: string, imageFilePath: string, forceUnixStyleSeparator: boolean, prefix: string, suffix: string): string {
-        if (basePath) {
-            imageFilePath = path.relative(basePath, imageFilePath);
-        }
+        if (this.ftpHostConfig && this.ftpFolderConfig) {
+            imageFilePath = `ftp://${this.ftpHostConfig}/${this.ftpFolderConfig}/${this.fileName}`;
+        } else {
+            if (basePath) {
+                imageFilePath = path.relative(basePath, imageFilePath);
+            }
 
-        if (forceUnixStyleSeparator) {
-            imageFilePath = upath.normalize(imageFilePath);
-        }
+            if (forceUnixStyleSeparator) {
+                imageFilePath = upath.normalize(imageFilePath);
+            }
 
-        imageFilePath = `${prefix}${imageFilePath}${suffix}`;
+            imageFilePath = `${prefix}${imageFilePath}${suffix}`;
+        }
 
         switch (languageId) {
             case "markdown":
