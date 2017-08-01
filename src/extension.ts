@@ -68,6 +68,7 @@ class Paster {
     static ftpUserPwdConfig: string;
     static ftpFolderConfig: string;
     static fileName: string;
+    static staticSitePort: number;
 
     public static paste() {
         // get current edit file path
@@ -97,6 +98,7 @@ class Paster {
         this.ftpUserPwdConfig = vscode.workspace.getConfiguration('pasteImageFtp')['ftpUserPwd'];
         this.ftpUserNameConfig = vscode.workspace.getConfiguration('pasteImageFtp')['ftpUserName'];
         this.ftpFolderConfig = vscode.workspace.getConfiguration('pasteImageFtp')['ftpFolder'];
+        this.staticSitePort = vscode.workspace.getConfiguration('pasteImageFtp')['staticSitePort'];
 
         // load config pasteImage.path/pasteImage.basePath
         this.folderPathFromConfig = vscode.workspace.getConfiguration('pasteImageFtp')['path'];
@@ -350,7 +352,7 @@ class Paster {
      */
     public static renderFilePath(languageId: string, basePath: string, imageFilePath: string, forceUnixStyleSeparator: boolean, prefix: string, suffix: string): string {
         if (this.ftpHostConfig && this.ftpFolderConfig) {
-            imageFilePath = `ftp://${this.ftpHostConfig}/${this.ftpFolderConfig}/${this.fileName}`;
+            imageFilePath = `http://${this.ftpHostConfig}:${this.staticSitePort}/${this.ftpFolderConfig}/${this.fileName}`;
         } else {
             if (basePath) {
                 imageFilePath = path.relative(basePath, imageFilePath);

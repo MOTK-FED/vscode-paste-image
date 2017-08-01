@@ -2,7 +2,7 @@
   "name": "vscode-paste-image-ftp",
   "displayName": "Paste Image Ftp",
   "description": "paste image from clipboard directly and upload ftp server",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "publisher": "ziok2010",
   "author": {
     "name": "ziok2010",
@@ -92,6 +92,11 @@
           "type": "string",
           "default": "",
           "description": "ftp server file saved folder"
+        },
+        "pasteImageFtp.staticSitePort": {
+          "type": "number",
+          "default": 80,
+          "description": "static web server for images"
         }
       }
     },
